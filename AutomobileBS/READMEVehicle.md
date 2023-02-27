@@ -43,6 +43,9 @@ Transfer 100 tokens from 'MAdil' to 'Dar'
 
  set-chain-env.sh         -i   '{"Args":["Manufacture", "3520299610969", "23B8", "A7655","Honda","2022","Car","Civic","7777","10000","12000","2/11/2022"]}'
   chain.sh  invoke
+
+   set-chain-env.sh         -i   '{"Args":["Manufacture", "3520299610969", "23Be8", "A76e55","Honda","2022","Car","City","7777","10000","12000","2/11/2022"]}'
+  chain.sh  invoke
 Query
 =====
 Check the balance for 'Madil' & 'Dar'

@@ -177,7 +177,7 @@ func addData(stub shim.ChaincodeStubInterface, vehicle Vehicle) peer.Response  {
 	jsonvehicle, _ := json.Marshal(vehicle)
 	balanceIndexKey, _ := stub.CreateCompositeKey(objectType, []string{vehicle.ChassisNo, vehicle.EngineNo, vehicle.CompanyName})
 	stub.PutState(balanceIndexKey, jsonvehicle)
-	return successResponse(balanceIndexKey)
+	return successResponse("successfully manufacture!!")
 }
 func (token *VehicleChaincode) GetVehicleByPartialCompositeKey(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
@@ -199,8 +199,8 @@ func (token *VehicleChaincode) GetVehicleByPartialCompositeKey(stub shim.Chainco
 	resultJSON += string(dat)
 	resultJSON += "]"
 
-	return shim.Success([]byte(resultJSON))
-	// // Print statements used in dev mode
+	return shim.Success([]byte(resultJSON)) 	
+	// Print statements used in dev mode
 	// fmt.Printf("==== Exec qry with:  ")
 	// fmt.Println(args)
 	// // Gets the state by partial query key
