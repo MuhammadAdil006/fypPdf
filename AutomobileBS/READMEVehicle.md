@@ -21,6 +21,7 @@ Setup the chaincode
 ===================
 . set-env.sh acme
 set-chain-env.sh -n history  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
+set-chain-env.sh -n transfer  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
 
 installing chaincode
 ==================
@@ -58,7 +59,7 @@ Query
 ====
 get the vehicle by chassis no ,engine no,company name
 by chassis no
-set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","23B8"]}'
+<!-- set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","23B8"]}'
  chain.sh query
  by engine no
  set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","A7655"]}'
@@ -66,7 +67,7 @@ set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","23B8"]}'
 
  by company name
   set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","Honda"]}'
- chain.sh query
+ chain.sh query -->
   by combining two or more
    set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","A7655","23B8","Honda"]}'
  chain.sh query
@@ -74,10 +75,14 @@ set-chain-env.sh         -q   '{"Args":["getStateRangeOnKey","23B8"]}'
 
 
 
-set-chain-env.sh  -q '{"Args": ["GetVehicleByVin", "100"]}'
-chain.sh query
+<!-- set-chain-env.sh  -q '{"Args": ["GetVehicleByVin", "100"]}'
+chain.sh query -->
 
-set-chain-env.sh  -i '{"Args": ["TransferOwnership", "100","J Smith","H Koolaid","2019-01-01"]}'
+Transfer Ownership
+ from ,to ,car composite key which is chassisNo~engineNo~companyName
+set-chain-env.sh  -i '{"Args": ["TransferOwnership", "3520299610969","1234","A7655","23B8","Honda","2019-02-01"]}'
+chain.sh invoke
+set-chain-env.sh  -i '{"Args": ["TransferOwnership", "7777","1234","A7655","23B8","Honda","2019-02-01"]}'
 chain.sh invoke
 
 set-chain-env.sh  -i '{"Args": ["TransferOwnership", "100","H Koolaid","M Rainbow","2019-02-01"]}'
