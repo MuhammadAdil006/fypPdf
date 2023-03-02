@@ -1,7 +1,7 @@
 Demonstrates the use of history
 ===============================
 History.go chaincode manages Cars as assets on the chain.
-Each Car managed on the chain is identified by a key = VIN (Vehicle Identification Number)
+<!-- Each Car managed on the chain is identified by a key = VIN (Vehicle Identification Number) -->
 Test data will be setup in the init() function
 
 TransferOwnership  = Transaction to Transfer the ownership of the car
@@ -20,8 +20,9 @@ This script may take upto 10+ min sometime :) PLEASE be patient
 Setup the chaincode
 ===================
 . set-env.sh acme
-set-chain-env.sh -n history  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
-set-chain-env.sh -n transfer  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
+<!-- set-chain-env.sh -n history  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
+set-chain-env.sh -n transfer  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}' -->
+set-chain-env.sh -n supplychain  -v 1.0   -p  AutomobileBS  -c '{"Args":["init","Pkr","10000000", "Pakistani Rupee!!!","MAdil"]}'
 
 installing chaincode
 ==================
@@ -42,6 +43,9 @@ Transfer 100 tokens from 'MAdil' to 'Dar'
    set-chain-env.sh         -q   '{"Args":["balanceOf","1234"]}'
  chain.sh query
 
+ set-chain-env.sh         -q   '{"Args":["balanceOf","6666"]}'
+ chain.sh query
+ 
  set-chain-env.sh         -i   '{"Args":["Manufacture", "3520299610969", "23B8", "A7655","Honda","2022","Car","Civic","7777","10000","12000","2/11/2022"]}'
   chain.sh  invoke
 
@@ -80,25 +84,26 @@ chain.sh query -->
 
 Transfer Ownership
  from ,to ,car composite key which is chassisNo~engineNo~companyName
-set-chain-env.sh  -i '{"Args": ["TransferOwnership", "3520299610969","1234","A7655","23B8","Honda","2019-02-01"]}'
+
 chain.sh invoke
 set-chain-env.sh  -i '{"Args": ["TransferOwnership", "7777","1234","A7655","23B8","Honda","2019-02-01"]}'
 chain.sh invoke
 
-set-chain-env.sh  -i '{"Args": ["TransferOwnership", "100","H Koolaid","M Rainbow","2019-02-01"]}'
-chain.sh invoke
 
-set-chain-env.sh  -q '{"Args": ["GetVehicleHistory", "100"]}'
+
+get vehicle history by providing three things
+chassisNO~EngineNo~Company name
+set-chain-env.sh  -q '{"Args": ["GetVehicleHistory", "A7655","23B8","Honda"]}'
 chain.sh query
 
-Assets:
+<!-- Assets:
 ======
 VIN,Make,Model,Year,Owner
 100,toyota,corolla,2001,J Smith
 200,honda,civic,199,G Roger
 300,audi,a5,1999,S Ripple
 400,bmw,x5,2013,M Jane
-500,toyota,camry,2018,J Hoover
+500,toyota,camry,2018,J Hoover -->
 
 KeyModification
 ===============
