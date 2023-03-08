@@ -15,7 +15,7 @@ import (
 
 
 	// KV Interface
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
+	// "github.com/hyperledger/fabric-protos-go/ledger/queryresult"
 
 	// JSON Encoding
 	"encoding/json"
@@ -138,7 +138,6 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 		return transfer(stub, args)
 	case funcName == "getStateRangeOnKey" :
 			// Query with GetStateByPartialCompositeKey
-			//getting vehicle current state
 		return history.GetVehicleByPartialCompositeKey(stub, args)
 		
 	}
@@ -149,16 +148,7 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 	}else if funcName == "TransferOwnership" {
 		// Invoke this function to transfer ownership of vehicle
 		return history.TransferOwnership(stub, args)
-	}else if funcName == "GetVehicleHistory" {
-			// Query this function to get txn history for specific vehicle
-		return history.GetVehicleHistory(stub, args)
-	
 	}
-	// else if funcName == "GetVehiclesByCNIC" {
-
-	// 	// Get all vehicle by year - just another example of query
-	// 	return history.GetVehiclesByCNIC(stub, args)
-	// }
 
 	// if funcName == "GetVehicleByVin" {
 	// 	// Returns the vehicle's current state
@@ -166,6 +156,14 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 
 	// } 
 
+	// } else if funcName == "GetVehicleHistory" {
+	// 	// Query this function to get txn history for specific vehicle
+	// 	return history.GetVehicleHistory(stub, args)
+
+	// } else if funcName == "GetVehiclesByYear" {
+
+	// 	// Get all vehicle by year - just another example of query
+	// 	return history.GetVehiclesByYear(stub, args)
 
 	// } else if funcName == "GetVehiclesOwners" {
 	// 	// To be implemented in the exercise
@@ -282,66 +280,59 @@ func (history *VehicleChaincode) Manufacture(stub shim.ChaincodeStubInterface, a
 
 }
 
-// GetVehicleHistory gets the history of the vehicle by chassis no engine and company name
+// GetVehicleHistory gets the history of the vehicle by VIN
+// args[0] = VIN
+// func (history *VehicleChaincode) GetVehicleHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
-// args[0] = ChassisNo args[1 ]=Engine No args[2]=company name
-func (history *VehicleChaincode) GetVehicleHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	// Check the number of args
+// 	if len(args) < 1 {
+// 		return shim.Error("MUST provide VIN !!!")
+// 	}
 
-	// Check the number of args
-	if len(args) < 3 {
-		return shim.Error("MUST provide engine no chassis no and company name !!!")
-	}
-	qryKey, errkey := stub.CreateCompositeKey(objectType, args)
-	if errkey != nil {
-		fmt.Printf("Error in creating key =" + errkey.Error())
-		return shim.Error(errkey.Error())
-	}
-	
-	fmt.Printf("Composite Key=%s\n", qryKey)
-	// Get the history for the key i.e., VIN#
-	historyQueryIterator, err := stub.GetHistoryForKey(qryKey)
+// 	// Get the history for the key i.e., VIN#
+// 	historyQueryIterator, err := stub.GetHistoryForKey(args[0])
 
-	// In case of error - return error
-	if err != nil {
-		return shim.Error("Error in fetching history !!!" + err.Error())
-	}
+// 	// In case of error - return error
+// 	if err != nil {
+// 		return shim.Error("Error in fetching history !!!" + err.Error())
+// 	}
 
-	// Local variable to hold the history record
-	var resultModification *queryresult.KeyModification
-	counter := 0
-	resultJSON := "["
+// 	// Local variable to hold the history record
+// 	var resultModification *queryresult.KeyModification
+// 	counter := 0
+// 	resultJSON := "["
 
-	// Start a loop with check for more rows
-	for historyQueryIterator.HasNext() {
+// 	// Start a loop with check for more rows
+// 	for historyQueryIterator.HasNext() {
 
-		// Get the next record
-		resultModification, err = historyQueryIterator.Next()
+// 		// Get the next record
+// 		resultModification, err = historyQueryIterator.Next()
 
-		if err != nil {
-			return shim.Error("Error in reading history record!!!" + err.Error())
-		}
+// 		if err != nil {
+// 			return shim.Error("Error in reading history record!!!" + err.Error())
+// 		}
 
-		// Append the data to local variable
-		data := "{\"txn\":" + resultModification.GetTxId()
-		data += " , \"value\": " + string(resultModification.GetValue()) + "}  "
-		if counter > 0 {
-			data = ", " + data
-		}
-		resultJSON += data
+// 		// Append the data to local variable
+// 		data := "{\"txn\":" + resultModification.GetTxId()
+// 		data += " , \"value\": " + string(resultModification.GetValue()) + "}  "
+// 		if counter > 0 {
+// 			data = ", " + data
+// 		}
+// 		resultJSON += data
 
-		counter++
-	}
+// 		counter++
+// 	}
 
-	// Close the iterator
-	historyQueryIterator.Close()
+// 	// Close the iterator
+// 	historyQueryIterator.Close()
 
-	// finalize the return string
-	resultJSON += "]"
-	resultJSON = "{ \"counter\": " + strconv.Itoa(counter) + ", \"txns\":" + resultJSON + "}"
+// 	// finalize the return string
+// 	resultJSON += "]"
+// 	resultJSON = "{ \"counter\": " + strconv.Itoa(counter) + ", \"txns\":" + resultJSON + "}"
 
-	// return success
-	return shim.Success([]byte(resultJSON))
-}
+// 	// return success
+// 	return shim.Success([]byte(resultJSON))
+// }
 
 
 // ***working hrere incomplete
@@ -409,22 +400,25 @@ func (history *VehicleChaincode) TransferOwnership(stub shim.ChaincodeStubInterf
 // 	return shim.Success([]byte(vehicle))
 // }
 
-// GetVehiclesByCNIC gets all the vehiclesownercinc=cnic
+// GetVehiclesByYear gets all the vehicles >= year
 // Another sample to show the use of Rich Queries
 // To make this work you need to create an index :)
 // Not using Pagination - so results restricted to a max of totalQueryLimit
-// func (history *VehicleChaincode) GetVehiclesByCNIC(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// func (history *VehicleChaincode) GetVehiclesByYear(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 // 	if len(args[0]) < 1 {
 // 		return shim.Error("Please provide a valid year !!!")
 // 	}
 // 	qry := `{
 // 		"selector": {
-// 		   "OwnerCNIC": " `
+// 		   "year": {
+// 			  "$gte": `
 
 // 	qry += args[0]
 // 	qry += `		  
-// 		   "}
+// 		   }
+// 		},
+// 		"sort": [{"year": "desc"}]
 // 	 }`
 
 // 	// GetQueryResult

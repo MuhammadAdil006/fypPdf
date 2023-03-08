@@ -15,7 +15,7 @@ import (
 
 
 	// KV Interface
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
+	// "github.com/hyperledger/fabric-protos-go/ledger/queryresult"
 
 	// JSON Encoding
 	"encoding/json"
@@ -138,7 +138,6 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 		return transfer(stub, args)
 	case funcName == "getStateRangeOnKey" :
 			// Query with GetStateByPartialCompositeKey
-			//getting vehicle current state
 		return history.GetVehicleByPartialCompositeKey(stub, args)
 		
 	}
@@ -146,26 +145,24 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 	//manufacturing use case
 	if funcName == "Manufacture" {
 		return history.Manufacture(stub, args)
-	}else if funcName == "TransferOwnership" {
-		// Invoke this function to transfer ownership of vehicle
-		return history.TransferOwnership(stub, args)
-	}else if funcName == "GetVehicleHistory" {
-			// Query this function to get txn history for specific vehicle
-		return history.GetVehicleHistory(stub, args)
-	
 	}
-	// else if funcName == "GetVehiclesByCNIC" {
-
-	// 	// Get all vehicle by year - just another example of query
-	// 	return history.GetVehiclesByCNIC(stub, args)
-	// }
 
 	// if funcName == "GetVehicleByVin" {
 	// 	// Returns the vehicle's current state
 	// 	return history.GetVehicleByVin(stub, args)
 
-	// } 
+	// } else if funcName == "TransferOwnership" {
+	// 	// Invoke this function to transfer ownership of vehicle
+	// 	return history.TransferOwnership(stub, args)
 
+	// } else if funcName == "GetVehicleHistory" {
+	// 	// Query this function to get txn history for specific vehicle
+	// 	return history.GetVehicleHistory(stub, args)
+
+	// } else if funcName == "GetVehiclesByYear" {
+
+	// 	// Get all vehicle by year - just another example of query
+	// 	return history.GetVehiclesByYear(stub, args)
 
 	// } else if funcName == "GetVehiclesOwners" {
 	// 	// To be implemented in the exercise
@@ -282,119 +279,92 @@ func (history *VehicleChaincode) Manufacture(stub shim.ChaincodeStubInterface, a
 
 }
 
-// GetVehicleHistory gets the history of the vehicle by chassis no engine and company name
+// GetVehicleHistory gets the history of the vehicle by VIN
+// args[0] = VIN
+// func (history *VehicleChaincode) GetVehicleHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
-// args[0] = ChassisNo args[1 ]=Engine No args[2]=company name
-func (history *VehicleChaincode) GetVehicleHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	// Check the number of args
+// 	if len(args) < 1 {
+// 		return shim.Error("MUST provide VIN !!!")
+// 	}
 
-	// Check the number of args
-	if len(args) < 3 {
-		return shim.Error("MUST provide engine no chassis no and company name !!!")
-	}
-	qryKey, errkey := stub.CreateCompositeKey(objectType, args)
-	if errkey != nil {
-		fmt.Printf("Error in creating key =" + errkey.Error())
-		return shim.Error(errkey.Error())
-	}
-	
-	fmt.Printf("Composite Key=%s\n", qryKey)
-	// Get the history for the key i.e., VIN#
-	historyQueryIterator, err := stub.GetHistoryForKey(qryKey)
+// 	// Get the history for the key i.e., VIN#
+// 	historyQueryIterator, err := stub.GetHistoryForKey(args[0])
 
-	// In case of error - return error
-	if err != nil {
-		return shim.Error("Error in fetching history !!!" + err.Error())
-	}
+// 	// In case of error - return error
+// 	if err != nil {
+// 		return shim.Error("Error in fetching history !!!" + err.Error())
+// 	}
 
-	// Local variable to hold the history record
-	var resultModification *queryresult.KeyModification
-	counter := 0
-	resultJSON := "["
+// 	// Local variable to hold the history record
+// 	var resultModification *queryresult.KeyModification
+// 	counter := 0
+// 	resultJSON := "["
 
-	// Start a loop with check for more rows
-	for historyQueryIterator.HasNext() {
+// 	// Start a loop with check for more rows
+// 	for historyQueryIterator.HasNext() {
 
-		// Get the next record
-		resultModification, err = historyQueryIterator.Next()
+// 		// Get the next record
+// 		resultModification, err = historyQueryIterator.Next()
 
-		if err != nil {
-			return shim.Error("Error in reading history record!!!" + err.Error())
-		}
+// 		if err != nil {
+// 			return shim.Error("Error in reading history record!!!" + err.Error())
+// 		}
 
-		// Append the data to local variable
-		data := "{\"txn\":" + resultModification.GetTxId()
-		data += " , \"value\": " + string(resultModification.GetValue()) + "}  "
-		if counter > 0 {
-			data = ", " + data
-		}
-		resultJSON += data
+// 		// Append the data to local variable
+// 		data := "{\"txn\":" + resultModification.GetTxId()
+// 		data += " , \"value\": " + string(resultModification.GetValue()) + "}  "
+// 		if counter > 0 {
+// 			data = ", " + data
+// 		}
+// 		resultJSON += data
 
-		counter++
-	}
+// 		counter++
+// 	}
 
-	// Close the iterator
-	historyQueryIterator.Close()
+// 	// Close the iterator
+// 	historyQueryIterator.Close()
 
-	// finalize the return string
-	resultJSON += "]"
-	resultJSON = "{ \"counter\": " + strconv.Itoa(counter) + ", \"txns\":" + resultJSON + "}"
+// 	// finalize the return string
+// 	resultJSON += "]"
+// 	resultJSON = "{ \"counter\": " + strconv.Itoa(counter) + ", \"txns\":" + resultJSON + "}"
 
-	// return success
-	return shim.Success([]byte(resultJSON))
-}
-
-
-// ***working hrere incomplete
+// 	// return success
+// 	return shim.Success([]byte(resultJSON))
+// }
 
 // TransferOwnership gets the asset information
 // Transfer the ownership of the vehicle from owner1 to owner2
 // args[0]=vin   args[1]=current owner  args[2]=new owner args[3]=transfer date
 // args[1] used for validation
-func (history *VehicleChaincode) TransferOwnership(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) < 6 {
-		return shim.Error("Must provide from ,to :owners cnic ,vehicle chassino engine no and company name,date")
-	}
+// func (history *VehicleChaincode) TransferOwnership(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	if len(args) < 4 {
+// 		return shim.Error("MUST provide VIN, Current owner, New owner, Transfer date !!!")
+// 	}
+// 	// get the state information
+// 	bytes, _ := stub.GetState(args[0])
+// 	if bytes == nil {
+// 		return shim.Error("Provided VIN not found!!!")
+// 	}
+// 	// unmarshall the data
+// 	// Read the JSON and Initialize the struct
+// 	var vehicle Vehicle
+// 	_ = json.Unmarshal(bytes, &vehicle)
 
+// 	// Business rule - the current owner MUST match
+// 	if vehicle.Owner != args[1] {
+// 		return shim.Error("Current owner MUST match !!!")
+// 	}
 
+// 	// check should be made if string is NOT blank
+// 	vehicle.Owner = args[2]
+// 	vehicle.Transfer = args[3]
+// 	jsonVehicle, _ := json.Marshal(vehicle)
 
-	// Create the query key
-	qryKey, errkey := stub.CreateCompositeKey(objectType,[]string{args[2],args[3],args[4]})
-	if errkey != nil {
-		fmt.Printf("Error in creating key =" + errkey.Error())
-		return shim.Error(errkey.Error())
-	}
-	
-	fmt.Printf("Composite Key=%s\n", qryKey)
+// 	stub.PutState(vehicle.VIN, jsonVehicle)
 
-	// Get the data
-	dat, err := stub.GetState(qryKey)
-
-	if err!=nil{
-		return errorResponse(err.Error(),888)
-	}
-
-	var vehicle Vehicle
-	_=json.Unmarshal(dat,&vehicle)
-	var a =args[0]
-	if vehicle.OwnerCNIC!=a{
-		fmt.Printf("You are not the owner")
-		return errorResponse(vehicle.OwnerCNIC+" "+ a+"You are not the owner",889)
-
-	}
-	// #if he is the owner just change the vehilce cnic and update it 
-	var newOwner = OwnerPrefix+args[1]
-	vehicle.OwnerCNIC=newOwner
-
-
-	vehicle.TransferDate = args[5]
-	jsonVehicle, _ := json.Marshal(vehicle)
-
-	stub.PutState(qryKey, jsonVehicle)
-	// Set the data in result string
-
-	return shim.Success([]byte("Vehicle Record Updated!!! " + string(jsonVehicle)))
-
-}
+// 	return shim.Success([]byte("Vehicle Record Updated!!! " + string(jsonVehicle)))
+// }
 
 // // GetVehicleByVin gets the asset information
 // func (history *VehicleChaincode) GetVehicleByVin(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -409,22 +379,25 @@ func (history *VehicleChaincode) TransferOwnership(stub shim.ChaincodeStubInterf
 // 	return shim.Success([]byte(vehicle))
 // }
 
-// GetVehiclesByCNIC gets all the vehiclesownercinc=cnic
+// GetVehiclesByYear gets all the vehicles >= year
 // Another sample to show the use of Rich Queries
 // To make this work you need to create an index :)
 // Not using Pagination - so results restricted to a max of totalQueryLimit
-// func (history *VehicleChaincode) GetVehiclesByCNIC(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// func (history *VehicleChaincode) GetVehiclesByYear(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 // 	if len(args[0]) < 1 {
 // 		return shim.Error("Please provide a valid year !!!")
 // 	}
 // 	qry := `{
 // 		"selector": {
-// 		   "OwnerCNIC": " `
+// 		   "year": {
+// 			  "$gte": `
 
 // 	qry += args[0]
 // 	qry += `		  
-// 		   "}
+// 		   }
+// 		},
+// 		"sort": [{"year": "desc"}]
 // 	 }`
 
 // 	// GetQueryResult
