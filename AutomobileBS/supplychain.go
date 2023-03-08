@@ -419,13 +419,16 @@ func (history *VehicleChaincode) GetVehiclesByCNIC(stub shim.ChaincodeStubInterf
 	}
 	qry := `{
 		"selector": {
-		   "ownerCNIC": " `
+		   "ownerCNIC": "`
 
 	qry += args[0]
-	qry += `		  
-		   "}
+	qry += `"		  
+		   }
 	 }`
-
+	// qry := `{
+	// 	"selector": {
+	// 	   "ownerCNIC": "7777"}
+	//  }`
 	// GetQueryResult
 	QryIterator, err := stub.GetQueryResult(qry)
 	if err != nil {
