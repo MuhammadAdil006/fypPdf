@@ -153,12 +153,11 @@ func (history *VehicleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.R
 			// Query this function to get txn history for specific vehicle
 		return history.GetVehicleHistory(stub, args)
 	
-	}
-	// else if funcName == "GetVehiclesByCNIC" {
+	}else if funcName == "GetVehiclesByCNIC" {
 
-	// 	// Get all vehicle by year - just another example of query
-	// 	return history.GetVehiclesByCNIC(stub, args)
-	// }
+		// Get all vehicle by year - just another example of query
+		return history.GetVehiclesByCNIC(stub, args)
+	}
 
 	// if funcName == "GetVehicleByVin" {
 	// 	// Returns the vehicle's current state
@@ -413,46 +412,46 @@ func (history *VehicleChaincode) TransferOwnership(stub shim.ChaincodeStubInterf
 // Another sample to show the use of Rich Queries
 // To make this work you need to create an index :)
 // Not using Pagination - so results restricted to a max of totalQueryLimit
-// func (history *VehicleChaincode) GetVehiclesByCNIC(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (history *VehicleChaincode) GetVehiclesByCNIC(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
-// 	if len(args[0]) < 1 {
-// 		return shim.Error("Please provide a valid year !!!")
-// 	}
-// 	qry := `{
-// 		"selector": {
-// 		   "OwnerCNIC": " `
+	if len(args[0]) < 1 {
+		return shim.Error("Please provide a valid year !!!")
+	}
+	qry := `{
+		"selector": {
+		   "ownerCNIC": " `
 
-// 	qry += args[0]
-// 	qry += `		  
-// 		   "}
-// 	 }`
+	qry += args[0]
+	qry += `		  
+		   "}
+	 }`
 
-// 	// GetQueryResult
-// 	QryIterator, err := stub.GetQueryResult(qry)
-// 	if err != nil {
-// 		return shim.Error("Error in executing rich query !!!! " + err.Error())
-// 	}
-// 	// hold the result json
-// 	resultJSON := "["
-// 	counter := 0
-// 	for QryIterator.HasNext() {
-// 		// Hold pointer to the query result
-// 		var resultKV *queryresult.KV
+	// GetQueryResult
+	QryIterator, err := stub.GetQueryResult(qry)
+	if err != nil {
+		return shim.Error("Error in executing rich query !!!! " + err.Error())
+	}
+	// hold the result json
+	resultJSON := "["
+	counter := 0
+	for QryIterator.HasNext() {
+		// Hold pointer to the query result
+		var resultKV *queryresult.KV
 
-// 		// Get the next element
-// 		resultKV, _ = QryIterator.Next()
+		// Get the next element
+		resultKV, _ = QryIterator.Next()
 
-// 		value := string(resultKV.GetValue())
-// 		if counter > 0 {
-// 			resultJSON += ", "
-// 		}
-// 		resultJSON += value
-// 		counter++
-// 	}
-// 	resultJSON += "]"
+		value := string(resultKV.GetValue())
+		if counter > 0 {
+			resultJSON += ", "
+		}
+		resultJSON += value
+		counter++
+	}
+	resultJSON += "]"
 
-// 	return shim.Success([]byte(resultJSON))
-// }
+	return shim.Success([]byte(resultJSON))
+}
 
 // // SetupSampleData creates multiple instances of the ERC20history
 // func (history *VehicleChaincode) SetupSampleData(stub shim.ChaincodeStubInterface) {
